@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:circular_seek_bar/circular_seek_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -6,8 +8,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class FilterOptions extends StatefulWidget {
   final ValueNotifier<double> valueNotifier;
-
-  const FilterOptions({super.key, required this.valueNotifier});
+  final ValueNotifier<double> distanceNotifier;
+  const FilterOptions(
+      {super.key, required this.valueNotifier, required this.distanceNotifier});
 
   @override
   State<FilterOptions> createState() => _FilterOptionsState();
@@ -16,12 +19,13 @@ class FilterOptions extends StatefulWidget {
 class _FilterOptionsState extends State<FilterOptions> {
   int? activeIndex; // To track the active ExpansionTile
   late ValueNotifier<double> _localValueNotifier;
-
-  double _progress = 80;
+  late ValueNotifier<double> _silderValueNotifier;
+ 
   @override
   void initState() {
     super.initState();
     _localValueNotifier = ValueNotifier(widget.valueNotifier.value);
+    _silderValueNotifier = ValueNotifier(widget.distanceNotifier.value);
   }
 
   String _getHeatLevel(double value) {
@@ -37,6 +41,7 @@ class _FilterOptionsState extends State<FilterOptions> {
   @override
   void dispose() {
     _localValueNotifier.dispose();
+    _silderValueNotifier.dispose();
     super.dispose();
   }
 
@@ -66,68 +71,87 @@ class _FilterOptionsState extends State<FilterOptions> {
               ],
             ),
 
-            // Filters
             _buildFilterTile(
-              index: 0,
-              icon: SvgPicture.asset('assets/svg/heat.svg'),
-              title: "Heat Score",
-              content: CircularSeekBar(
-                width: double.infinity,
-                height: 200,
-                progress: _localValueNotifier.value,
-                barWidth: 8,
-                startAngle: 45,
-                sweepAngle: 270,
-                strokeCap: StrokeCap.butt,
-                progressGradientColors: const [
-                  Colors.red,
-                  Colors.orange,
-                  Colors.yellow,
-                  Colors.green,
-                  Colors.blue,
-                  Colors.indigo,
-                  Colors.purple,
-                ],
-                innerThumbRadius: 5,
-                innerThumbStrokeWidth: 3,
-                innerThumbColor: Colors.white,
-                outerThumbRadius: 5,
-                outerThumbStrokeWidth: 10,
-                outerThumbColor: AppColors.primaryBlue,
-                dashWidth: 1,
-                dashGap: 2,
-                animation: true,
-                curves: Curves.bounceOut,
-                valueNotifier: _localValueNotifier,
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: _localValueNotifier,
-                    builder: (_, double value, __) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(_getHeatLevel(value),
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold)),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('Heat Score',
-                                style: TextStyle(color: Colors.grey)),
-                            SizedBox(width: 10),
-                            Icon(
-                              Icons.info_outline_rounded,
-                              color: Colors.grey,
-                            ),
-                          ],
-                        ),
+                index: 0,
+                icon: SvgPicture.asset('assets/svg/heat.svg'),
+                title: "Heat Score",
+                content: Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    // CircularSeekBar with progress (Start angle 90, sweep angle 180)
+                    CircularSeekBar(
+                      width: 200,
+                      height: 200,
+                      trackColor: AppColors.grey.withOpacity(0.3),
+                      progress: _localValueNotifier.value,
+                      barWidth: 14,
+                      startAngle: 90,
+                      sweepAngle: 180,
+                      strokeCap: StrokeCap.butt,
+                      progressGradientColors: const [
+                        Color(0xFFFF7C6F),
+                        Color(0xFFEBA857),
+                        Color(0xFF5799D6),
+                        Color(0xFF5799D6),
+                        Color(0xFF5ACBD2),
                       ],
+                      innerThumbRadius: 5,
+                      innerThumbStrokeWidth: 3,
+                      innerThumbColor: Colors.white,
+                      outerThumbRadius: 5,
+                      outerThumbStrokeWidth: 10,
+                      outerThumbColor: AppColors.primaryBlue,
+                      dashWidth: 1.3,
+                      dashGap: 2,
+                      animation: true,
+                      curves: Curves.bounceOut,
+                      valueNotifier: _localValueNotifier,
+                      child: Center(
+                        child: ValueListenableBuilder(
+                          valueListenable: _localValueNotifier,
+                          builder: (_, double value, __) => Column(
+                            children: [
+                              const SizedBox(
+                                height: 35,
+                              ),
+                              Text(
+                                _getHeatLevel(value),
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('Heat Score',
+                                      style: TextStyle(color: Colors.grey)),
+                                  SizedBox(width: 10),
+                                  Icon(
+                                    Icons.info_outline_rounded,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            ),
+                    // Custom painter to draw the line
+                    Positioned(
+                      top: 20,
+                      child: SvgPicture.asset(
+                        'assets/svg/Path.svg',
+                        width: 80,
+                        height: 80,
+                        // ignore: deprecated_member_use
+                        color: AppColors.grey,
+                      ),
+                    )
+                  ],
+                )),
+
             _buildFilterTile(
               index: 1,
               icon: SvgPicture.asset('assets/svg/popular.svg'),
@@ -138,8 +162,34 @@ class _FilterOptionsState extends State<FilterOptions> {
               index: 2,
               icon: SvgPicture.asset('assets/svg/distance.svg'),
               title: "Distance",
-              content: const Text("Distance filter options go here."),
+              content: Center(
+                child: ValueListenableBuilder(
+                  valueListenable: _silderValueNotifier,
+                  builder: (_, double value, __) {
+                    // Ensure value is clamped between min and max
+                    double clampedValue = value.clamp(100.0, 1000.0);
+
+                    return Column(
+                      children: [
+                        Slider(
+                          max: 1000.0,
+                          min: 100.0,
+                          value: clampedValue, // Use the clamped value
+                          onChanged: (double newValue) {
+                            setState(() {
+                              _silderValueNotifier.value =
+                                  newValue; // Update the ValueNotifier
+                            });
+                          },
+                        ),
+                        Text("Distance: ${clampedValue.toStringAsFixed(1)} km"),
+                      ],
+                    );
+                  },
+                ),
+              ),
             ),
+
             _buildFilterTile(
               index: 3,
               icon: SvgPicture.asset('assets/svg/rating.svg'),
@@ -160,7 +210,7 @@ class _FilterOptionsState extends State<FilterOptions> {
               onPressed: () {
                 // Handle Apply Changes
                 widget.valueNotifier.value = _localValueNotifier.value;
-
+                widget.distanceNotifier.value = _silderValueNotifier.value;
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
@@ -214,7 +264,7 @@ class _FilterOptionsState extends State<FilterOptions> {
               padding: const EdgeInsets.all(8.0),
               child: content,
             ),
-            const SizedBox(height: 8), // Add space at the bottom
+            // Add space at the bottom
           ],
         ),
       ),

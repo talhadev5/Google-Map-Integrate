@@ -7,7 +7,7 @@ import 'package:tophotels/modules/view/map/current_location.dart';
 import 'package:tophotels/modules/view/map/map_home.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   final ValueNotifier<String> _currentLocationNameNotifier =
       ValueNotifier<String>('Unknown Location');
   final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
-
+  final ValueNotifier<double> _distanceNotifier = ValueNotifier(400.0);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           // Background Image
           MapHomePage(
+            distanceNotifier: _distanceNotifier,
             valueNotifier: _valueNotifier,
             currentLocationNameNotifier: _currentLocationNameNotifier,
           ),
@@ -133,6 +134,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       builder: (context) => FilterOptions(
                         valueNotifier: _valueNotifier,
+                        distanceNotifier: _distanceNotifier,
                       ),
                     );
                   },

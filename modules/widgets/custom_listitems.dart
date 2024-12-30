@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
@@ -26,10 +27,24 @@ class CustomListItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Circular Image/Icon
-          CircleAvatar(
-            backgroundImage: NetworkImage(imageUrl),
-            radius: 25,
+          CachedNetworkImage(
+            imageUrl: imageUrl,
+            imageBuilder: (context, imageProvider) => CircleAvatar(
+              radius: 25,
+              backgroundImage: imageProvider,
+            ),
+            placeholder: (context, url) => const SizedBox(
+              width: 15,
+              height: 15,
+              child: CircularProgressIndicator(
+                strokeWidth: 4,
+                color: AppColors.primaryBlue,
+              ),
+            ), // Placeholder while loading
+            errorWidget: (context, url, error) => const Icon(
+                Icons.error), // Error widget if the image fails to load
           ),
+
           const SizedBox(width: 10),
           // Title and Details
           Expanded(
@@ -45,7 +60,8 @@ class CustomListItem extends StatelessWidget {
                     ),
                     const SizedBox(width: 3),
                     if (isVerified)
-                      const Icon(Icons.verified, size: 16, color: Colors.blue),
+                      const Icon(Icons.check_circle,
+                          size: 16, color: Colors.blue),
                   ],
                 ),
                 Row(

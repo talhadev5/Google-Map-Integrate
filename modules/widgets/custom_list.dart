@@ -81,7 +81,8 @@ class CustomListViewWidget extends StatelessWidget {
     },
   ];
   final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
-  
+    final ValueNotifier<double> _distanceNotifier = ValueNotifier(0);
+
   CustomListViewWidget({super.key, });
  
 
@@ -141,6 +142,7 @@ class CustomListViewWidget extends StatelessWidget {
                               ),
                               builder: (context) => FilterOptions(
                                 valueNotifier: _valueNotifier,
+                                distanceNotifier: _distanceNotifier,
                               ),
                             );
                           },
