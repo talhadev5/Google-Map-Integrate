@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 // class MapHomePage extends StatefulWidget {
@@ -81,10 +83,16 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geocoding/geocoding.dart'; // Add geocoding for reverse geocoding
+import 'package:geocoding/geocoding.dart';
+import 'package:tophotels/modules/view/map/current_location.dart'; // Add geocoding for reverse geocoding
 
 class MapHomePage extends StatefulWidget {
-  const MapHomePage({super.key});
+  final ValueNotifier<String> currentLocationNameNotifier;
+  ValueNotifier<double> valueNotifier = ValueNotifier<double>(0.5);
+  MapHomePage(
+      {super.key,
+      required this.currentLocationNameNotifier,
+      required this.valueNotifier});
 
   @override
   State<MapHomePage> createState() => _MapHomePageState();
@@ -92,89 +100,259 @@ class MapHomePage extends StatefulWidget {
 
 class _MapHomePageState extends State<MapHomePage> {
   final Completer<GoogleMapController> _controller = Completer();
-  List<Marker> _markers = <Marker>[];
+  final List<Marker> _markers = <Marker>[];
+  final Set<Circle> _circles = {};
 
+  // Initialize the ValueNotifier for CircularSeekBar
+  // final ValueNotifier<double> _valueNotifier =
+  //     ValueNotifier<double>(0.5); // Default value
+
+  // Initial Camera Position
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(33.6844, 73.0479), // Initial location
-    zoom: 10,
+    target: LatLng(33.6844, 73.0479), // Default location
+    zoom: 18,
   );
 
   @override
   void initState() {
     super.initState();
-    _loadDefaultMarkers();
+    _loadUserLocation();
+    _startLocationUpdates(); // Start listening to location updates
+    widget.valueNotifier.addListener(() {
+      _onFilterValueChanged();
+    });
   }
 
-  // Load default markers
-  void _loadDefaultMarkers() {
-    _markers = [
-      const Marker(
-        markerId: MarkerId('faisalabad'),
-        position: LatLng(31.4187, 73.0791),
-        infoWindow: InfoWindow(title: 'Faisalabad, Pakistan'),
+  void _startLocationUpdates() {
+    Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10, // Update every 10 meters
       ),
-      const Marker(
-        markerId: MarkerId('islamabad'),
-        position: LatLng(33.6844, 73.0479),
-        infoWindow: InfoWindow(title: 'Islamabad, Pakistan'),
-      ),
-      const Marker(
-        markerId: MarkerId('lahore'),
-        position: LatLng(31.5497, 74.3436),
-        infoWindow: InfoWindow(title: 'Lahore, Pakistan'),
-      ),
-      const Marker(
-        markerId: MarkerId('karachi'),
-        position: LatLng(24.8607, 67.0011),
-        infoWindow: InfoWindow(title: 'Karachi, Pakistan'),
-      ),
-      const Marker(
-        markerId: MarkerId('multan'),
-        position: LatLng(30.1575, 71.5249),
-        infoWindow: InfoWindow(title: 'Multan, Pakistan'),
-      ),
-      const Marker(
-        markerId: MarkerId('peshawar'),
-        position: LatLng(34.0151, 71.5249),
-        infoWindow: InfoWindow(title: 'Peshawar, Pakistan'),
-      ),
-      const Marker(
-        markerId: MarkerId('abbottabad'),
-        position: LatLng(34.1463, 73.2140),
-        infoWindow: InfoWindow(title: 'Abbottabad, Pakistan'),
-      ),
-      const Marker(
-        markerId: MarkerId('rawalpindi'),
-        position: LatLng(33.6007, 73.0679),
-        infoWindow: InfoWindow(title: 'Rawalpindi, Pakistan'),
-      ),
-    ];
+    ).listen((Position position) {
+      final userLatLng = LatLng(position.latitude, position.longitude);
+      _updateUserLocation(userLatLng);
+    });
   }
 
-  // Add marker dynamically when user taps
-  void _addMarker(LatLng position) async {
-    String address = "Unknown location";
+  void _updateUserLocation(LatLng userLatLng) async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      userLatLng.latitude,
+      userLatLng.longitude,
+    );
+
+    String locationName = "Unknown Location";
+    if (placemarks.isNotEmpty) {
+      final Placemark place = placemarks.first;
+      locationName = [
+        place.name,
+        place.locality,
+        place.administrativeArea,
+        place.country
+      ].where((element) => element != null && element.isNotEmpty).join(', ');
+
+      widget.currentLocationNameNotifier.value = locationName;
+    }
+
+    setState(() {
+      // Update marker
+      _markers
+          .removeWhere((marker) => marker.markerId.value == 'user_location');
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('user_location'),
+          position: userLatLng,
+          infoWindow: InfoWindow(title: 'Your Location', snippet: locationName),
+        ),
+      );
+
+      // Update circle
+      _addOrUpdateCircle(userLatLng, widget.valueNotifier.value);
+    });
+  }
+
+  @override
+  void dispose() {
+    widget.valueNotifier.removeListener(_onFilterValueChanged);
+    widget.valueNotifier.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadUserLocation() async {
     try {
+      final position = await getUserCurrentLocation();
+      final userLatLng = LatLng(position.latitude, position.longitude);
+
       List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
       );
-      if (placemarks.isNotEmpty) {
-        address = placemarks.first.locality ?? address;
-      }
-    } catch (e) {
-      print("Error fetching address: $e");
-    }
 
-    setState(() {
+      if (placemarks.isNotEmpty) {
+        final Placemark place = placemarks.first;
+        final accurateLocationName = [
+          place.name,
+          place.locality,
+          place.administrativeArea,
+          place.country
+        ].where((element) => element != null && element.isNotEmpty).join(', ');
+
+        // Update the currentLocationNameNotifier
+        widget.currentLocationNameNotifier.value = accurateLocationName;
+      }
+
+      // Add the user marker and update circle
       _markers.add(
         Marker(
-          markerId: MarkerId(position.toString()),
-          position: position,
-          infoWindow: InfoWindow(title: address),
+          markerId: const MarkerId('user_location'),
+          position: userLatLng,
+          infoWindow: InfoWindow(
+              title: 'Your Location',
+              snippet: widget.currentLocationNameNotifier.value),
         ),
       );
+
+      _addOrUpdateCircle(userLatLng, widget.valueNotifier.value);
+
+      final GoogleMapController controller = await _controller.future;
+      controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: userLatLng,
+        zoom: 14,
+      )));
+
+      setState(() {}); // Refresh the UI
+    } catch (e) {
+      print("Error fetching user location: $e");
+    }
+  }
+
+  // Add or update a circle around a given position based on the filter value
+  // void _addOrUpdateCircle(LatLng position, double filterValue) {
+  //   // Remove existing circle if any
+  //   _circles.removeWhere(
+  //       (circle) => circle.circleId.value == 'user_location_circle');
+
+  //   // Add new circle
+  //   _circles.add(
+  //     Circle(
+  //       circleId: const CircleId('user_location_circle'),
+  //       center: position,
+  //       radius: _getCircleRadius(filterValue),
+  //       fillColor: _getCircleColor(filterValue).withOpacity(0.5),
+  //       strokeColor: _getCircleColor(filterValue),
+  //       strokeWidth: 1,
+  //     ),
+  //   );
+  // }
+
+  // // Determine circle radius based on filter value
+  double _getCircleRadius(double filterValue) {
+    // Adjust these values as per your requirement
+    if (filterValue < 0.3) return 100; // Low
+    if (filterValue < 0.7) return 300; // Medium
+    return 500; // High
+  }
+
+  // // Determine circle color based on filter value
+  // Color _getCircleColor(double filterValue) {
+  //   if (filterValue < 0.3) return Colors.green;
+  //   if (filterValue < 0.7) return Colors.orange;
+  //   return Colors.red;
+  // }
+
+  // // Handle changes in the filter's value
+  // void _onFilterValueChanged() {
+  //   final newValue = widget.valueNotifier.value;
+  //   if (_markers.any((marker) => marker.markerId.value == 'user_location')) {
+  //     final userMarker = _markers
+  //         .firstWhere((marker) => marker.markerId.value == 'user_location');
+  //     _addOrUpdateCircle(userMarker.position, newValue);
+  //     setState(() {});
+  //   }
+  // }
+
+  void _addOrUpdateCircle(LatLng position, double filterValue) {
+    _circles.removeWhere(
+        (circle) => circle.circleId.value == 'user_location_circle');
+
+    _circles.add(
+      Circle(
+        circleId: const CircleId('user_location_circle'),
+        center: position,
+        radius: _getCircleRadius(filterValue),
+        fillColor: _getCircleColor(filterValue).withOpacity(0.5),
+        strokeColor: _getCircleColor(filterValue),
+        strokeWidth: 1,
+      ),
+    );
+  }
+
+  Color _getCircleColor(double filterValue) {
+    // Use the same logic as in FilterOptions to determine color
+    if (filterValue <= 20) return Colors.green; // Low heat
+    if (filterValue > 20 && filterValue <= 70)
+      return Colors.yellow; // Medium heat
+    return Colors.red; // High heat
+  }
+
+  void _onFilterValueChanged() {
+    final newValue = widget.valueNotifier.value;
+    if (_markers.any((marker) => marker.markerId.value == 'user_location')) {
+      final userMarker = _markers
+          .firstWhere((marker) => marker.markerId.value == 'user_location');
+      _addOrUpdateCircle(userMarker.position, newValue);
+      setState(() {}); // Update UI
+    }
+  }
+
+  // Add marker dynamically when user taps on the map
+  void _onMapTapped(LatLng tappedLatLng) async {
+    // Fetch the address for the tapped location
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      tappedLatLng.latitude,
+      tappedLatLng.longitude,
+    );
+
+    String locationName = "Unknown Location";
+    if (placemarks.isNotEmpty) {
+      final Placemark place = placemarks.first;
+      locationName = [
+        place.name,
+        place.locality,
+        place.administrativeArea,
+        place.country
+      ].where((element) => element != null && element.isNotEmpty).join(', ');
+    }
+
+    // Update the marker and circle
+    setState(() {
+      // Remove any existing user location marker
+      _markers
+          .removeWhere((marker) => marker.markerId.value == 'user_location');
+
+      // Add new marker at tapped position
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('user_location'),
+          position: tappedLatLng,
+          infoWindow:
+              InfoWindow(title: 'Tapped Location', snippet: locationName),
+        ),
+      );
+
+      // Add or update circle based on new location
+      _addOrUpdateCircle(tappedLatLng, widget.valueNotifier.value);
     });
+
+    // Move camera to tapped position
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: tappedLatLng,
+      zoom: 14,
+    )));
+
+    // Update location name in notifier
+    widget.currentLocationNameNotifier.value = locationName;
   }
 
   @override
@@ -186,7 +364,8 @@ class _MapHomePageState extends State<MapHomePage> {
         zoomControlsEnabled: true,
         myLocationEnabled: true,
         markers: Set<Marker>.of(_markers),
-        onTap: _addMarker, // Capture user tap to add a marker
+        circles: _circles,
+        onTap: _onMapTapped, // Capture user tap to add a marker
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },

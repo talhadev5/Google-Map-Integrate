@@ -13,7 +13,7 @@ class CustomNavBar extends StatefulWidget {
 
 class _PosNavBarState extends State<CustomNavBar> {
   int currentIndex = 0;
-
+ 
   // Variable to track whether the custom list screen is shown or not
   bool showCustomListScreen = false;
 

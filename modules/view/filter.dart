@@ -5,22 +5,23 @@ import 'package:tophotels/modules/resources/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class FilterOptions extends StatefulWidget {
-  const FilterOptions({super.key});
+  final ValueNotifier<double> valueNotifier;
+
+  const FilterOptions({super.key, required this.valueNotifier});
 
   @override
   State<FilterOptions> createState() => _FilterOptionsState();
 }
 
 class _FilterOptionsState extends State<FilterOptions> {
-  double heatScore = 50; // Default Heat Score
   int? activeIndex; // To track the active ExpansionTile
-  late ValueNotifier<double> _valueNotifier = ValueNotifier(0);
+  late ValueNotifier<double> _localValueNotifier;
 
   double _progress = 80;
   @override
   void initState() {
     super.initState();
-    _valueNotifier = ValueNotifier(_progress);
+    _localValueNotifier = ValueNotifier(widget.valueNotifier.value);
   }
 
   String _getHeatLevel(double value) {
@@ -33,10 +34,9 @@ class _FilterOptionsState extends State<FilterOptions> {
     }
   }
 
-
   @override
   void dispose() {
-    _valueNotifier.dispose();
+    _localValueNotifier.dispose();
     super.dispose();
   }
 
@@ -74,7 +74,7 @@ class _FilterOptionsState extends State<FilterOptions> {
               content: CircularSeekBar(
                 width: double.infinity,
                 height: 200,
-                progress: _progress,
+                progress: _localValueNotifier.value,
                 barWidth: 8,
                 startAngle: 45,
                 sweepAngle: 270,
@@ -98,14 +98,14 @@ class _FilterOptionsState extends State<FilterOptions> {
                 dashGap: 2,
                 animation: true,
                 curves: Curves.bounceOut,
-                valueNotifier: _valueNotifier,
+                valueNotifier: _localValueNotifier,
                 child: Center(
                   child: ValueListenableBuilder(
-                    valueListenable: _valueNotifier,
+                    valueListenable: _localValueNotifier,
                     builder: (_, double value, __) => Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('${_getHeatLevel(value)}',
+                        Text(_getHeatLevel(value),
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 24,
@@ -159,6 +159,8 @@ class _FilterOptionsState extends State<FilterOptions> {
             ElevatedButton(
               onPressed: () {
                 // Handle Apply Changes
+                widget.valueNotifier.value = _localValueNotifier.value;
+
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(

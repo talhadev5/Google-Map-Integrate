@@ -80,8 +80,10 @@ class CustomListViewWidget extends StatelessWidget {
       'status': 'Normal',
     },
   ];
-
- CustomListViewWidget({super.key});
+  final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
+  
+  CustomListViewWidget({super.key, });
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +139,9 @@ class CustomListViewWidget extends StatelessWidget {
                                 borderRadius: BorderRadius.vertical(
                                     top: Radius.circular(16)),
                               ),
-                              builder: (context) => const FilterOptions(),
+                              builder: (context) => FilterOptions(
+                                valueNotifier: _valueNotifier,
+                              ),
                             );
                           },
                           icon: SvgPicture.asset('assets/svg/filter_icon.svg')),
@@ -180,4 +184,3 @@ class CustomListViewWidget extends StatelessWidget {
     );
   }
 }
-
