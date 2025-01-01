@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   final ValueNotifier<String> _currentLocationNameNotifier =
       ValueNotifier<String>('Unknown Location');
   final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
-  final ValueNotifier<double> _distanceNotifier = ValueNotifier(400.0);
+  final ValueNotifier<double> _distanceNotifier = ValueNotifier(0.0);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
