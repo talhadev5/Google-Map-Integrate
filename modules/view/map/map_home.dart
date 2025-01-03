@@ -110,10 +110,11 @@ class _MapHomePageState extends State<MapHomePage> {
     // List of image paths for different markers
     List<String> imagePaths = [
       'assets/svg/Avatar.png',
+      'assets/svg/Avatar-1.png',
       'assets/svg/Avatar-2.png',
+      'assets/svg/Avatar-3.png',
       'assets/svg/Avatar-4.png',
       'assets/svg/Avatar-5.png',
-      'assets/svg/Avatar-3.png',
       // Add more image paths if necessary
     ];
 
@@ -349,6 +350,41 @@ class _MapHomePageState extends State<MapHomePage> {
 
   Future<void> _loadUserLocation() async {
     try {
+      // Check current location permission status
+      LocationPermission permission = await Geolocator.checkPermission();
+
+      // If permission is denied, request permission
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // Show snack bar asking for permission
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                  'Location permission is required to continue. Please allow it.'),
+              duration: const Duration(seconds: 3),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+            ),
+          );
+          return;
+        }
+      }
+
+      // If permission is denied forever
+      if (permission == LocationPermission.deniedForever) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+                'Location permissions are permanently denied. Please enable them in settings.'),
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+          ),
+        );
+        return;
+      }
+
       final position = await getUserCurrentLocation();
       final userLatLng = LatLng(position.latitude, position.longitude);
 
@@ -589,6 +625,7 @@ class _MapHomePageState extends State<MapHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    _loadUserLocation();
     return Scaffold(
       body: GoogleMap(
         initialCameraPosition: _kGooglePlex,

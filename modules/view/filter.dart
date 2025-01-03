@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tophotels/modules/widgets/custom_seekbar.dart';
 
 class FilterOptions extends StatefulWidget {
   final ValueNotifier<double> valueNotifier;
@@ -79,12 +80,22 @@ class _FilterOptionsState extends State<FilterOptions> {
                 alignment: Alignment.topCenter,
                 children: [
                   // CircularSeekBar with progress (Start angle 90, sweep angle 180)
+                  Positioned(
+                    top: 22,
+                    child: SvgPicture.asset(
+                      'assets/svg/Path.svg',
+                      width: 80,
+                      height: 80,
+                      // ignore: deprecated_member_use
+                      color: AppColors.grey,
+                    ),
+                  ),
                   Container(
                     height: 110,
                     // margin: EdgeInsets.symmetric(vertical: 5),
                     color: Colors.transparent,
                     child: ListView(
-                      padding: const EdgeInsets.all(2),
+                      padding: const EdgeInsets.all(4),
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
                         CircularSeekBar(
@@ -106,13 +117,13 @@ class _FilterOptionsState extends State<FilterOptions> {
                           innerThumbRadius: 5,
                           innerThumbStrokeWidth: 3,
                           innerThumbColor: Colors.white,
-                          outerThumbRadius: 5,
+                          outerThumbRadius: 7,
                           outerThumbStrokeWidth: 10,
                           outerThumbColor: AppColors.primaryBlue,
                           dashWidth: 1.3,
                           dashGap: 2,
-                          animation: true,
-                          curves: Curves.bounceOut,
+                          animation: false,
+                          curves: Curves.linear,
                           valueNotifier: _localValueNotifier,
                           child: Center(
                             child: ValueListenableBuilder(
@@ -150,16 +161,16 @@ class _FilterOptionsState extends State<FilterOptions> {
                     ),
                   ),
                   // Custom painter to draw the line
-                  Positioned(
-                    top: 20,
-                    child: SvgPicture.asset(
-                      'assets/svg/Path.svg',
-                      width: 80,
-                      height: 80,
-                      // ignore: deprecated_member_use
-                      color: AppColors.grey,
-                    ),
-                  )
+                  // Positioned(
+                  //   top: 20,
+                  //   child: SvgPicture.asset(
+                  //     'assets/svg/Path.svg',
+                  //     width: 80,
+                  //     height: 80,
+                  //     // ignore: deprecated_member_use
+                  //     color: AppColors.grey,
+                  //   ),
+                  // )
                 ],
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
 import 'package:tophotels/modules/view/homepage.dart';
 import 'package:tophotels/modules/widgets/custom_list.dart';
+import 'package:tophotels/modules/widgets/custom_seekbar.dart';
 
 class CustomNavBar extends StatefulWidget {
   const CustomNavBar({super.key});
@@ -13,7 +14,7 @@ class CustomNavBar extends StatefulWidget {
 
 class _PosNavBarState extends State<CustomNavBar> {
   int currentIndex = 0;
- 
+
   // Variable to track whether the custom list screen is shown or not
   bool showCustomListScreen = false;
 
@@ -25,6 +26,7 @@ class _PosNavBarState extends State<CustomNavBar> {
         style: TextStyle(color: Colors.black),
       ),
     ),
+
     const SizedBox.shrink(), // Empty space for 'Gfit a drink'
     const Center(
       child: Text(
