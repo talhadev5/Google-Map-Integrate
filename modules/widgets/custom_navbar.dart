@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
 import 'package:tophotels/modules/view/homepage.dart';
 import 'package:tophotels/modules/widgets/custom_list.dart';
-import 'package:tophotels/modules/widgets/custom_seekbar.dart';
 
 class CustomNavBar extends StatefulWidget {
   const CustomNavBar({super.key});
@@ -19,7 +18,7 @@ class _PosNavBarState extends State<CustomNavBar> {
   bool showCustomListScreen = false;
 
   List<Widget> pages = [
-    HomePage(), // Regular Home screen
+    const HomePage(), // Regular Home screen
     const Center(
       child: Text(
         'Friend Screen\n Coming Soon',

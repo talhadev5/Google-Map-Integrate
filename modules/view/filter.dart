@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:circular_seek_bar/circular_seek_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tophotels/modules/widgets/custom_seekbar.dart';
 
 class FilterOptions extends StatefulWidget {
   final ValueNotifier<double> valueNotifier;

@@ -42,7 +42,13 @@ class _MapHomePageState extends State<MapHomePage> {
   @override
   void initState() {
     super.initState();
-    _loadUserLocation();
+    _checkLocationServiceStatus();
+    Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
+      if (status == ServiceStatus.enabled) {
+        // Location services enabled, call loadUserLocation again
+        loadUserLocation();
+      }
+    });
     _startLocationUpdates(); // Start listening to location updates
     widget.valueNotifier.addListener(() {
       _onFilterValueChanged();
@@ -348,46 +354,58 @@ class _MapHomePageState extends State<MapHomePage> {
     });
   }
 
-  Future<void> _loadUserLocation() async {
+  bool isLocationServiceEnabled = false;
+//  chekc service...............
+  Future<void> _checkLocationServiceStatus() async {
+    isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (isLocationServiceEnabled) {
+      loadUserLocation();
+    } else {
+      // _showSnackBar('Please enable location services to continue.');
+    }
+  }
+
+  Future<void> loadUserLocation() async {
     try {
+      // Check if location services are enabled
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: const Text(
+        //         'Location services are disabled. Please enable them in settings.'),
+        //     duration: const Duration(seconds: 3),
+        //     behavior: SnackBarBehavior.floating,
+        //     backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+        //   ),
+        // );
+        return;
+      }
+
       // Check current location permission status
       LocationPermission permission = await Geolocator.checkPermission();
-
-      // If permission is denied, request permission
-      if (permission == LocationPermission.denied) {
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          // Show snack bar asking for permission
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                  'Location permission is required to continue. Please allow it.'),
-              duration: const Duration(seconds: 3),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
-            ),
-          );
+        if (permission != LocationPermission.always &&
+            permission != LocationPermission.whileInUse) {
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     content: const Text(
+          //         'Location permission is required to continue. Please allow it.'),
+          //     duration: const Duration(seconds: 3),
+          //     behavior: SnackBarBehavior.floating,
+          //     backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+          //   ),
+          // );
           return;
         }
       }
 
-      // If permission is denied forever
-      if (permission == LocationPermission.deniedForever) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-                'Location permissions are permanently denied. Please enable them in settings.'),
-            duration: const Duration(seconds: 3),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
-          ),
-        );
-        return;
-      }
-
+      // Fetch the user's current location
       final position = await getUserCurrentLocation();
       final userLatLng = LatLng(position.latitude, position.longitude);
 
+      // Get the placemark for the location
       List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
@@ -406,7 +424,7 @@ class _MapHomePageState extends State<MapHomePage> {
         widget.currentLocationNameNotifier.value = accurateLocationName;
       }
 
-      // Add the user marker and update circle
+      // Add the user marker
       _markers.add(
         Marker(
           markerId: const MarkerId('user_location'),
@@ -417,33 +435,12 @@ class _MapHomePageState extends State<MapHomePage> {
               snippet: widget.currentLocationNameNotifier.value),
         ),
       );
-// Add two more markers outside the circles
-      final LatLng marker1Position =
-          calculateNewCoordinates(userLatLng, 1000, 270); // 1km away at 45°
-      final LatLng marker2Position =
-          calculateNewCoordinates(userLatLng, 1200, 215); // 1.2km away at 135°
 
-      _markers.addAll([
-        Marker(
-          markerId: const MarkerId('extra_marker_1'),
-          position: marker1Position,
-          icon: markerIcon2,
-          infoWindow:
-              const InfoWindow(title: 'Marker 1', snippet: 'Outside Circle'),
-        ),
-        Marker(
-          markerId: const MarkerId('extra_marker_2'),
-          position: marker2Position,
-          icon: markerIcon1,
-          infoWindow:
-              const InfoWindow(title: 'Marker 2', snippet: 'Outside Circle'),
-        ),
-      ]);
-
-      // _addOrUpdateCircle(userLatLng, widget.valueNotifier.value);
+      // Update the circle and markers
       _addOrUpdateCircle(userLatLng, widget.valueNotifier.value,
           widget.distanceNotifier.value);
 
+      // Animate camera to user's current location
       final GoogleMapController controller = await _controller.future;
       controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: userLatLng,
@@ -625,7 +622,6 @@ class _MapHomePageState extends State<MapHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    _loadUserLocation();
     return Scaffold(
       body: GoogleMap(
         initialCameraPosition: _kGooglePlex,
@@ -636,7 +632,9 @@ class _MapHomePageState extends State<MapHomePage> {
         circles: _circles,
         onTap: _onMapTapped, // Capture user tap to add a marker
         onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
+          if (!_controller.isCompleted) {
+            _controller.complete(controller);
+          }
         },
       ),
     );
