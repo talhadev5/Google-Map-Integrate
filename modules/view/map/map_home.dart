@@ -6,10 +6,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
-import 'package:tophotels/modules/view/map/current_location.dart'; // Add geocoding for reverse geocoding
+import 'package:tophotels/modules/view/map/current_location.dart';
+import 'package:tophotels/modules/viewmodel/maplogic.dart'; // Add geocoding for reverse geocoding
 
 class MapHomePage extends StatefulWidget {
   final ValueNotifier<String> currentLocationNameNotifier;
@@ -26,6 +28,7 @@ class MapHomePage extends StatefulWidget {
 }
 
 class _MapHomePageState extends State<MapHomePage> {
+  final controller = Get.put(Maplogic());
   final Completer<GoogleMapController> _controller = Completer();
   final List<Marker> _markers = <Marker>[];
   final Set<Circle> _circles = {};
@@ -168,93 +171,94 @@ class _MapHomePageState extends State<MapHomePage> {
         setState(() {
           _markers.add(
             Marker(
-              draggable: true,
-              markerId: MarkerId('dummy_person_$i'),
-              position: positions[i],
-              infoWindow: InfoWindow(title: 'Person $i'),
-              icon: personIcons[i],
-              onTap: () => _onDummyMarkerTapped(positions[i], i),
-            ),
+                draggable: true,
+                markerId: MarkerId('dummy_person_$i'),
+                position: positions[i],
+                infoWindow: InfoWindow(title: 'Person $i'),
+                icon: personIcons[i],
+                onTap: () {
+                  controller.infoBottomSheet();
+                }),
           );
         });
       });
     }
   }
 
-  void _onDummyMarkerTapped(LatLng position, int markerId) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // Allows dynamic height adjustment
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.4, // Adjust height
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                  'assets/images/cover_image.jpg'), // Replace with your cover image
-              fit: BoxFit.cover,
-            ),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              // Circular profile image
-              const CircleAvatar(
-                radius: 30,
-                backgroundImage: AssetImage(
-                    'assets/svg/Avatar wrap.png'), // Replace with profile image
-              ),
-              const SizedBox(height: 20),
-              // Text content
-              Text(
-                'Person $markerId',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Latitude: ${position.latitude}, Longitude: ${position.longitude}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
-              // Action button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close the bottom sheet
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    backgroundColor: AppColors.primaryBlue,
-                    minimumSize:
-                        const Size(double.infinity, 50), // Full-width button
-                  ),
-                  child: const Text(
-                    'Close',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  // void _onDummyMarkerTapped(LatLng position, int markerId) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true, // Allows dynamic height adjustment
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //     ),
+  //     builder: (context) {
+  //       return Container(
+  //         height: MediaQuery.of(context).size.height * 0.4, // Adjust height
+  //         decoration: const BoxDecoration(
+  //           image: DecorationImage(
+  //             image: AssetImage(
+  //                 'assets/images/cover_image.jpg'), // Replace with your cover image
+  //             fit: BoxFit.cover,
+  //           ),
+  //           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //         ),
+  //         child: Column(
+  //           children: [
+  //             const SizedBox(height: 20),
+  //             // Circular profile image
+  //             const CircleAvatar(
+  //               radius: 30,
+  //               backgroundImage: AssetImage(
+  //                   'assets/svg/Avatar wrap.png'), // Replace with profile image
+  //             ),
+  //             const SizedBox(height: 20),
+  //             // Text content
+  //             Text(
+  //               'Person $markerId',
+  //               style: const TextStyle(
+  //                 fontSize: 20,
+  //                 fontWeight: FontWeight.bold,
+  //                 color: Colors.black,
+  //               ),
+  //               textAlign: TextAlign.center,
+  //             ),
+  //             const SizedBox(height: 8),
+  //             Text(
+  //               'Latitude: ${position.latitude}, Longitude: ${position.longitude}',
+  //               style: const TextStyle(
+  //                 fontSize: 16,
+  //                 color: Colors.black,
+  //               ),
+  //               textAlign: TextAlign.center,
+  //             ),
+  //             const SizedBox(height: 40),
+  //             // Action button
+  //             Padding(
+  //               padding: const EdgeInsets.symmetric(horizontal: 16.0),
+  //               child: ElevatedButton(
+  //                 onPressed: () {
+  //                   Navigator.pop(context); // Close the bottom sheet
+  //                 },
+  //                 style: ElevatedButton.styleFrom(
+  //                   shape: RoundedRectangleBorder(
+  //                       borderRadius: BorderRadius.circular(10)),
+  //                   backgroundColor: AppColors.primaryBlue,
+  //                   minimumSize:
+  //                       const Size(double.infinity, 50), // Full-width button
+  //                 ),
+  //                 child: const Text(
+  //                   'Close',
+  //                   style: TextStyle(color: Colors.black),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   void _startLocationUpdates() {
     Geolocator.getPositionStream(
@@ -622,21 +626,23 @@ class _MapHomePageState extends State<MapHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GoogleMap(
-        initialCameraPosition: _kGooglePlex,
-        mapType: MapType.normal,
-        zoomControlsEnabled: true,
-        myLocationEnabled: true,
-        markers: Set<Marker>.of(_markers),
-        circles: _circles,
-        onTap: _onMapTapped, // Capture user tap to add a marker
-        onMapCreated: (GoogleMapController controller) {
-          if (!_controller.isCompleted) {
-            _controller.complete(controller);
-          }
-        },
-      ),
-    );
+    return GetBuilder<Maplogic>(builder: (controller) {
+      return Scaffold(
+        body: GoogleMap(
+          initialCameraPosition: _kGooglePlex,
+          mapType: MapType.normal,
+          zoomControlsEnabled: true,
+          myLocationEnabled: true,
+          markers: Set<Marker>.of(_markers),
+          circles: _circles,
+          onTap: _onMapTapped, // Capture user tap to add a marker
+          onMapCreated: (GoogleMapController controller) {
+            if (!_controller.isCompleted) {
+              _controller.complete(controller);
+            }
+          },
+        ),
+      );
+    });
   }
 }

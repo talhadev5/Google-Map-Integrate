@@ -5,7 +5,7 @@ class AppColors {
   static const Color primaryBlue = Color(0xFF5DCAFA);
   static const Color greencolor = Color(0xFF4BCEB2);
   static const Color secondaryblue = Color(0xFF5E9AD1);
-  static const Color expandableBackground = Color(0xFFE2E2E280);
+  static const Color geryColorLight = Color(0xFFEEF0F1);
   // static List<Color> primaryGradient = [primaryBlue, secondaryLightYellow];
   static const Color textDarkColor = Color(0xFF374151);
   static const Color textMediaSubTitleColor = Color(0xFFB6B4B4);
