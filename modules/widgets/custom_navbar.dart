@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
+import 'package:tophotels/modules/view/friends/friends_page.dart';
 import 'package:tophotels/modules/view/homepage.dart';
+import 'package:tophotels/modules/view/payments/payment.dart';
+import 'package:tophotels/modules/view/profile/profile.dart';
 import 'package:tophotels/modules/widgets/custom_list.dart';
 
 class CustomNavBar extends StatefulWidget {
@@ -19,26 +22,11 @@ class _PosNavBarState extends State<CustomNavBar> {
 
   List<Widget> pages = [
     const HomePage(), // Regular Home screen
-    const Center(
-      child: Text(
-        'Friend Screen\n Coming Soon',
-        style: TextStyle(color: Colors.black),
-      ),
-    ),
+    FriendsPage(),
 
     const SizedBox.shrink(), // Empty space for 'Gfit a drink'
-    const Center(
-      child: Text(
-        'History Screen\n Coming Soon',
-        style: TextStyle(color: Colors.black),
-      ),
-    ),
-    const Center(
-      child: Text(
-        'Account Screen\n Coming Soon',
-        style: TextStyle(color: Colors.black),
-      ),
-    ),
+    PaymentPage(),
+    ProfilePage(),
   ];
 
   @override
