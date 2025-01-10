@@ -343,32 +343,39 @@ class FriendsPage extends StatelessWidget {
                               controller.pending.value = true;
                               controller.update();
                             },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: AppColors.white,
-                                  borderRadius: BorderRadius.circular(15),
-                                  border: Border.all(
-                                    color:
-                                        AppColors.primaryBlue.withOpacity(0.3),
-                                  )),
-                              child: ListTile(
-                                leading: SvgPicture.asset(
-                                    'assets/svg/add_firend.svg'),
-                                title: const Text(
-                                  'Pending friend requests',
-                                  style: TextStyle(
-                                    color: AppColors.black,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: AppColors.white,
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(
+                                        color: AppColors.primaryBlue
+                                            .withOpacity(0.3),
+                                      )),
+                                  child: ListTile(
+                                    leading: SvgPicture.asset(
+                                        'assets/svg/add_firend.svg'),
+                                    title: const Text(
+                                      'Pending friend requests',
+                                      style: TextStyle(
+                                        color: AppColors.black,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    subtitle: const Text(
+                                      'view pending requests',
+                                      style: TextStyle(
+                                        color: AppColors.primaryBlue,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                subtitle: const Text(
-                                  'view pending requests',
-                                  style: TextStyle(
-                                    color: AppColors.primaryBlue,
-                                  ),
+                                SizedBox(
+                                  height: Get.height * .01,
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                           // Using the dynamic section color change

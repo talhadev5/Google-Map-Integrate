@@ -146,7 +146,7 @@ class ChipLogic extends GetxController {
                           title: 'Send Chip(s)',
                           backgroundColor: AppColors.primaryBlue,
                           onTap: () {
-                            reciveChiipSheet();
+                            // reciveChiipSheet();
                           },
                           textColor: AppColors.black,
                           borderSideColor: Colors.transparent,
@@ -192,7 +192,9 @@ class ChipLogic extends GetxController {
                     .viewInsets, // Dynamically adjust for keyboard
                 duration: const Duration(milliseconds: 300), // Smooth animation
                 child: Container(
-                  color: AppColors.white,
+                  decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(10)),
                   child: Container(
                     decoration: BoxDecoration(
                       // color: Colors.white,
@@ -293,7 +295,9 @@ class ChipLogic extends GetxController {
                     .viewInsets, // Dynamically adjust for keyboard
                 duration: const Duration(milliseconds: 300), // Smooth animation
                 child: Container(
-                  color: AppColors.white,
+                  decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(10)),
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: RadialGradient(
@@ -360,6 +364,97 @@ class ChipLogic extends GetxController {
                             },
                             textColor: AppColors.grey,
                             borderSideColor: AppColors.grey.withOpacity(0.3),
+                          ),
+
+                          const SizedBox(height: 12),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+// merchent ...........
+  merchentSheet() {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      context: Get.context!,
+      isScrollControlled: true, // Makes the bottom sheet height flexible
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return AnimatedPadding(
+                padding: MediaQuery.of(context)
+                    .viewInsets, // Dynamically adjust for keyboard
+                duration: const Duration(milliseconds: 300), // Smooth animation
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                          radius: 0.7,
+                          center: Alignment.topCenter,
+                          colors: [
+                            AppColors.primaryBlue.withOpacity(0.3),
+                            AppColors.white
+                          ]),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Header Section
+                          Align(
+                              alignment: Alignment.center,
+                              child: Image.asset('assets/svg/dots_icon.png')),
+                          SizedBox(
+                            height: Get.height * .03,
+                          ),
+
+                          const Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Merchant is not using chiip',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 28,
+                                color: AppColors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "You have paid with a virtual VISA that we generated because the merchant does not have Chiip. Recommend them to use Chiip to benefit from all the functionalities.",
+                            style:
+                                TextStyle(fontSize: 16, color: AppColors.black),
+                          ),
+                          SizedBox(
+                            height: Get.height * .05,
+                          ),
+                          // Action Buttons
+                          CustomButton(
+                            title: 'OK, close',
+                            backgroundColor: AppColors.primaryBlue,
+                            onTap: () {
+                              Get.back();
+                            },
+                            textColor: AppColors.black,
+                            borderSideColor: Colors.transparent,
                           ),
 
                           const SizedBox(height: 12),

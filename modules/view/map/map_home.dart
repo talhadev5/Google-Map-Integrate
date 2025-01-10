@@ -11,6 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
 import 'package:tophotels/modules/view/map/current_location.dart';
+import 'package:tophotels/modules/viewmodel/chip_logic.dart';
 import 'package:tophotels/modules/viewmodel/maplogic.dart'; // Add geocoding for reverse geocoding
 
 class MapHomePage extends StatefulWidget {
@@ -177,7 +178,14 @@ class _MapHomePageState extends State<MapHomePage> {
                 infoWindow: InfoWindow(title: 'Person $i'),
                 icon: personIcons[i],
                 onTap: () {
-                  controller.infoBottomSheet();
+                  // controller.infoBottomSheet();
+                  if (i == 0) {
+                    ChipLogic().merchentSheet();
+                  } else if (i == 1) {
+                    ChipLogic().reciveChiipSheet();
+                  } else {
+                    controller.infoBottomSheet();
+                  }
                 }),
           );
         });

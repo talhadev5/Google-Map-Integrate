@@ -23,9 +23,9 @@ class _PosNavBarState extends State<CustomNavBar> {
   List<Widget> pages = [
     const HomePage(), // Regular Home screen
     FriendsPage(),
-
-    const SizedBox.shrink(), // Empty space for 'Gfit a drink'
     PaymentPage(),
+    const SizedBox.shrink(), // Empty space for 'Gfit a drink'
+    // PaymentPage(),
     ProfilePage(),
   ];
 

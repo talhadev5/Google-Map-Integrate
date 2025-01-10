@@ -87,52 +87,51 @@ class ProfilePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: Get.width * .17),
-                      child: Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[00],
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(
-                                  color: AppColors.grey.withOpacity(0.3)),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(3.0),
-                              child: Center(
-                                  child: Text(
-                                '254 friends',
-                                style: TextStyle(
-                                  color: AppColors.grey,
-                                ),
-                              )),
-                            ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: Get.width * .17,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[00],
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                                color: AppColors.grey.withOpacity(0.3)),
                           ),
-                          const SizedBox(
-                            width: 10,
+                          child: const Padding(
+                            padding: EdgeInsets.all(3.0),
+                            child: Center(
+                                child: Text(
+                              '254 friends',
+                              style: TextStyle(
+                                color: AppColors.grey,
+                              ),
+                            )),
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[00],
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(
-                                  color: AppColors.grey.withOpacity(0.3)),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(3.0),
-                              child: Center(
-                                  child: Text(
-                                '754 Chiip send',
-                                style: TextStyle(
-                                  color: AppColors.grey,
-                                ),
-                              )),
-                            ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[00],
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                                color: AppColors.grey.withOpacity(0.3)),
                           ),
-                        ],
-                      ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(3.0),
+                            child: Center(
+                                child: Text(
+                              '754 Chiip send',
+                              style: TextStyle(
+                                color: AppColors.grey,
+                              ),
+                            )),
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(
                       height: Get.height * .02,

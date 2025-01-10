@@ -81,13 +81,19 @@ class Maplogic extends GetxController {
                                   ],
                                 ),
                                 trailing: GestureDetector(
-                                  onTap: () {
-                                    addinfo.value = !addinfo.value;
-                                    update();
-                                  },
-                                  child: SvgPicture.asset(addinfo.value == false
-                                      ? 'assets/svg/personadd_iocn.svg'
-                                      : 'assets/svg/personskip.svg'),
+                                  onTap: requestStatus.value
+                                      ? () {
+                                          addinfo.value = !addinfo.value;
+                                          update();
+                                        }
+                                      : null,
+                                  child: SvgPicture.asset(
+                                    requestStatus.value
+                                        ? (addinfo.value
+                                            ? 'assets/svg/personskip.svg' // Show "person skip" if tapped
+                                            : 'assets/svg/request_person.svg') // Default to "request person"
+                                        : 'assets/svg/personadd_iocn.svg',
+                                  ),
                                 ),
                               ),
                             ),

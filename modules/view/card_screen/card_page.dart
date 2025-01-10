@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
+import 'package:tophotels/modules/widgets/custom_navbar.dart';
 
 class CardPage extends StatefulWidget {
   const CardPage({super.key});
@@ -26,7 +27,7 @@ class _CardPageState extends State<CardPage> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Get.back();
+                      Get.to(() => CustomNavBar());
                     },
                     child: const Text(
                       'Done',
