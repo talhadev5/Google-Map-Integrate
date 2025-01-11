@@ -88,7 +88,7 @@ class _FilterOptionsState extends State<FilterOptions> {
                     ),
                   ),
                   Container(
-                    height: 110,
+                    height: 117,
                     // margin: EdgeInsets.symmetric(vertical: 5),
                     color: Colors.transparent,
                     child: ListView(

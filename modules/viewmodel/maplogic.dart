@@ -61,16 +61,20 @@ class Maplogic extends GetxController {
                                 ),
                                 subtitle: Row(
                                   children: [
-                                    Image.asset(addinfo.value == false
-                                        ? 'assets/svg/heart.png'
-                                        : 'assets/svg/galas.png'),
+                                    Image.asset(requestStatus.value
+                                        ? (addinfo.value
+                                            ? 'assets/svg/galas.png'
+                                            : 'assets/svg/history_icon.png')
+                                        : 'assets/svg/heart.png'),
                                     SizedBox(
                                       width: Get.width * .02,
                                     ),
                                     Text(
-                                      addinfo.value == false
-                                          ? '2 mutual friends'
-                                          : 'Drinking at Yellowes',
+                                      requestStatus.value
+                                          ? (addinfo.value
+                                              ? 'Drinking at Yellowes'
+                                              : 'Pending friend request')
+                                          : '2 mutual friends',
                                       style: const TextStyle(
                                         color: AppColors.white,
                                         overflow: TextOverflow.ellipsis,

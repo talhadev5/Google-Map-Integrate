@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
+import 'package:tophotels/modules/view/payments/auto_top.dart';
 import 'package:tophotels/modules/view/payments/paypal_payment.dart';
 import 'package:tophotels/modules/viewmodel/paymentlogic.dart';
 import 'package:tophotels/modules/widgets/custombutton.dart';
@@ -113,7 +114,9 @@ class PaymentPage extends StatelessWidget {
                   child: CustomButton(
                     title: 'Topup Chiip balance',
                     backgroundColor: AppColors.primaryBlue,
-                    onTap: () {},
+                    onTap: () {
+                      Get.to(() => PaypalPayment());
+                    },
                     textColor: AppColors.black,
                     borderSideColor: Colors.transparent,
                   ),
@@ -126,7 +129,9 @@ class PaymentPage extends StatelessWidget {
                   child: CustomButton(
                     title: 'Configure auto topup',
                     backgroundColor: AppColors.white,
-                    onTap: () {},
+                    onTap: () {
+                      Get.to(() => AutoToppage());
+                    },
                     textColor: AppColors.grey,
                     borderSideColor: AppColors.grey.withOpacity(0.3),
                   ),
@@ -156,9 +161,7 @@ class PaymentPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 2),
                       child: ListTile(
-                        onTap: () {
-                          Get.to(() => PaypalPayment());
-                        },
+                        onTap: () {},
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
                         tileColor: AppColors.white,

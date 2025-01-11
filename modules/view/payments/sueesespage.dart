@@ -55,7 +55,7 @@ class SuccessPage extends StatelessWidget {
                 onTap: () {
                   auto == 'auto'
                       ? Get.to(() => const CustomNavBar())
-                      : Get.to(() => AutoToppage());
+                      : Get.to(() => const CustomNavBar());
                 },
                 textColor: AppColors.black,
                 borderSideColor: Colors.transparent,

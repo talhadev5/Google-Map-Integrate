@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
 import 'package:tophotels/modules/view/card_screen/card_page.dart';
+import 'package:tophotels/modules/widgets/custom_navbar.dart';
 import 'package:tophotels/modules/widgets/custombutton.dart';
 
 class ChipLogic extends GetxController {
@@ -146,7 +147,7 @@ class ChipLogic extends GetxController {
                           title: 'Send Chip(s)',
                           backgroundColor: AppColors.primaryBlue,
                           onTap: () {
-                            // reciveChiipSheet();
+                            Get.to(() => CustomNavBar());
                           },
                           textColor: AppColors.black,
                           borderSideColor: Colors.transparent,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
+import 'package:tophotels/modules/view/chip/chip.dart';
 import 'package:tophotels/modules/viewmodel/friends_logic.dart';
 
 // class FriendsPage extends StatelessWidget {
@@ -628,12 +629,19 @@ class FriendsPage extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  Text(
-                    data['tralling'].toString(),
-                    style: TextStyle(
-                      color: tarllingColor,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
+                  GestureDetector(
+                    onTap: () {
+                      data['tralling'] == 'Send Chiip'
+                          ? Get.to(() => ChipPage())
+                          : null;
+                    },
+                    child: Text(
+                      data['tralling'].toString(),
+                      style: TextStyle(
+                        color: tarllingColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ],

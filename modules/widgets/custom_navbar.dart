@@ -24,9 +24,10 @@ class _PosNavBarState extends State<CustomNavBar> {
     const HomePage(), // Regular Home screen
     FriendsPage(),
     PaymentPage(),
+    ProfilePage(),
     const SizedBox.shrink(), // Empty space for 'Gfit a drink'
     // PaymentPage(),
-    ProfilePage(),
+    // ProfilePage(),
   ];
 
   @override
