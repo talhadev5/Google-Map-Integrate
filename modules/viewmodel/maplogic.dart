@@ -41,7 +41,11 @@ class Maplogic extends GetxController {
                         children: [
                           ClipRRect(
                               borderRadius: BorderRadius.circular(12),
-                              child: Image.asset('assets/svg/coverimage.png')),
+                              child: Image.asset(
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                'assets/svg/coverimage.png',
+                              )),
                           Positioned(
                             bottom: 10,
                             child: SizedBox(

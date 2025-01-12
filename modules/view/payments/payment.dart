@@ -64,6 +64,7 @@ class PaymentPage extends StatelessWidget {
                     Image.asset(
                       'assets/svg/Frame_back.png',
                       width: double.infinity,
+                      fit: BoxFit.cover,
                     ),
                     const Positioned(
                       left: 20,

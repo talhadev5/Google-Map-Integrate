@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:tophotels/modules/resources/app_colors.dart';
 
@@ -27,24 +28,27 @@ class CustomListItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Circular Image/Icon
-          CachedNetworkImage(
-            imageUrl: imageUrl,
-            imageBuilder: (context, imageProvider) => CircleAvatar(
-              radius: 25,
-              backgroundImage: imageProvider,
-            ),
-            placeholder: (context, url) => const SizedBox(
-              width: 15,
-              height: 15,
-              child: CircularProgressIndicator(
-                strokeWidth: 4,
-                color: AppColors.primaryBlue,
-              ),
-            ), // Placeholder while loading
-            errorWidget: (context, url, error) => const Icon(
-                Icons.error), // Error widget if the image fails to load
+          // CachedNetworkImage(
+          //   imageUrl: imageUrl,
+          //   imageBuilder: (context, imageProvider) => CircleAvatar(
+          //     radius: 25,
+          //     backgroundImage: imageProvider,
+          //   ),
+          //   placeholder: (context, url) => const SizedBox(
+          //     width: 15,
+          //     height: 15,
+          //     child: CircularProgressIndicator(
+          //       strokeWidth: 4,
+          //       color: AppColors.primaryBlue,
+          //     ),
+          //   ), // Placeholder while loading
+          //   errorWidget: (context, url, error) => const Icon(
+          //       Icons.error), // Error widget if the image fails to load
+          // ),
+          CircleAvatar(
+            radius: 25,
+            backgroundImage: AssetImage(imageUrl),
           ),
-
           const SizedBox(width: 10),
           // Title and Details
           Expanded(
